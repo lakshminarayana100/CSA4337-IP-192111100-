@@ -1,0 +1,483 @@
+index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flight Reservation System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1 class="text-center mb-4">Flight Reservation System</h1>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="login.php">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="search_flights.php">Search Flights</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.php">About</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Help</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <main class="container py-4">
+        <section class="hero">
+            <h2 class="text-center mb-4">Book your flights with ease</h2>
+            <p class="lead text-center">Explore destinations, find the best deals, and book your flights effortlessly.</p>
+            <a href="search_flights.php" class="btn btn-primary btn-lg btn-block">Search Flights</a>
+        </section>
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="text-center">Featured Destinations</h3>
+                <div class="card-columns">
+                    <div class="card">
+                        <img src="/destination1.jpg" class="card-img-top" alt="Destination 1">
+                        <div class="card-body">
+                            <h5 class="card-title">Bali, Indonesia</h5>
+                            <p class="card-text">Enjoy the beaches, culture, and serenity of Bali.</p>
+                            <a href="#" class="btn btn-primary">Learn More</a>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+            <div class="col-md-6">
+                <h3 class="text-center">Recent Reviews</h3>
+                <blockquote class="blockquote">
+                    <br>
+                    <p class="mb-0">I had a wonderful experience booking my flight through this system. The process was smooth, and I found great deals!</p>
+                    <footer class="blockquote-footer">John Smith, <cite title="Source Title">Happy Customer</cite></footer>
+                </blockquote>
+                </div>
+        </div>
+    </main>
+    <footer class="text-center py-3">
+        &copy; 2024 Flight Reservation System
+    </footer>
+</body>
+</html>
+
+about.php
+<!DOCTYPE html>
+<html>
+<head>
+  <title>About - Flight Reservation System</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    </header>
+  <main>
+    <h2>About Us</h2>
+    <p>Welcome to our flight reservation system! We're passionate about making our customers dream of flying come true.</p>
+    </main>
+  <footer>
+    </footer>
+</body>
+</html>
+
+search_flight
+<?php
+// Connect to the database
+$conn = mysqli_connect("localhost", "root", "", "flight_ticket");
+
+// Check connection
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+// If form is submitted
+if (isset($_POST['departure'])) {
+    // Validate user input
+    $errors = [];
+    if (empty($_POST['departure'])) {
+        $errors[] = "Departure city is required.";
+    }
+    if (empty($_POST['arrival'])) {
+        $errors[] = "Arrival city is required.";
+    }
+    if (empty($_POST['departure_date'])) {
+        $errors[] = "Departure date is required.";
+    } else {
+        // Basic date format validation
+        if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $_POST['departure_date'])) {
+            $errors[] = "Invalid date format. Please use YYYY-MM-DD.";
+        }
+    }
+
+    // If no errors, proceed with database query
+    if (empty($errors)) {
+        // Prepare SQL query using parameterized statements
+        $stmt = $conn->prepare("SELECT * FROM flights WHERE departure_city = ? AND arrival_city = ? AND departure_date = ?");
+        $stmt->bind_param("sss", $_POST['departure'], $_POST['arrival'], $_POST['departure_date']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        // Display results
+        if ($result->num_rows > 0) {
+            echo "<h2>Search Results</h2>";
+            echo "<table>";
+            echo "<thead><tr><th>Flight Number</th><th>Departure City</th><th>Arrival City</th><th>Departure Date</th><th>Arrival Date</th><th>Price</th></tr></thead>";
+            echo "<tbody>";
+            while ($row = $result->fetch_assoc()) {
+                echo "<tr>";
+                echo "<td>" . $row['flight_number'] . "</td>";
+                echo "<td>" . $row['departure_city'] . "</td>";
+                echo "<td>" . $row['arrival_city'] . "</td>";
+                echo "<td>" . $row['departure_date'] . "</td>";
+                echo "<td>" . $row['arrival_date'] . "</td>";
+                echo "<td>" . $row['price'] . "</td>";
+                echo "</tr>";
+            }
+            echo "</tbody>";
+            echo "</table>";
+        } else {
+            echo "<p>No flights found matching your criteria.</p>";
+        }
+    } else {
+        // Display errors
+        echo "<ul>";
+        foreach ($errors as $error) {
+            echo "<li>$error</li>";
+        }
+        echo "</ul>";
+    }
+}
+
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Flights - Flight Reservation System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+    </header>
+    <main>
+        <h2>Search Flights</h2>
+        <form action="search_flights.php" method="post">
+            </form>
+    </main>
+    <footer>
+    </footer>
+</body>
+</html>
+
+login.php
+<?php
+// Connect to the database
+$conn = mysqli_connect("localhost", "root", "", "flight_ticket");
+
+// Check connection
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+// If form is submitted
+if (isset($_POST['username'])) {
+    // Validate user input
+    $errors = [];
+    if (empty($_POST['username'])) {
+        $errors[] = "Username is required.";
+    }
+    if (empty($_POST['password'])) {
+        $errors[] = "Password is required.";
+    }
+
+    // If no errors, proceed with authentication
+    if (empty($errors)) {
+        // Prepare SQL query using parameterized statements
+        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+        $stmt->bind_param("s", $_POST['username']);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+
+        // If user found, verify password
+        if ($user) {
+            if (password_verify($_POST['password'], $user['password'])) {
+                // Successful login
+                session_start();
+                $_SESSION['user_id'] = $user['id'];
+                // Redirect to desired page after login (replace with your target page)
+                header("Location: dashboard.php");
+                exit;
+            } else {
+                $errors[] = "Invalid username or password.";
+            }
+        } else {
+            $errors[] = "Invalid username or password.";
+        }
+    }
+
+    // Display errors if any
+    if (!empty($errors)) {
+        echo "<ul>";
+        foreach ($errors as $error) {
+            echo "<li>$error</li>";
+        }
+        echo "</ul>";
+    }
+}
+
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - Flight Reservation System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+    </header>
+    <main>
+        <h2>Login</h2>
+        <form action="login.php" method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+        <p>Don't have an account? <a href="register.php">Register</a></p>
+        <p>Forgot password? <a href="forgot_password.php">Reset Password</a></p>
+    </main>
+    <footer>
+    </footer>
+</body>
+</html>
+
+dashboard.php
+<?php
+// Start session
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+// Connect to the database
+$conn = mysqli_connect("localhost", "root", "", "flight_ticket");
+
+// Check connection
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+// Fetch user information (replace with actual column names)
+$stmt = $conn->prepare("SELECT name, email FROM users WHERE id = ?");
+$stmt->bind_param("i", $_SESSION['user_id']);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard - Flight Reservation System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Welcome to Your Dashboard, <?php echo htmlspecialchars($user['name']); ?></h1>
+        <a href="logout.php">Logout</a>
+    </header>
+    <main>
+        <h2>Your Information</h2>
+        <ul>
+            <li>Name: <?php echo htmlspecialchars($user['name']); ?></li>
+            <li>Email: <?php echo htmlspecialchars($user['email']); ?></li>
+            </ul>
+        <h2>Flight Booking</h2>
+        <h2>Your Bookings</h2>
+        </main>
+    <footer>
+    </footer>
+</body>
+</html>
+
+logout.php
+<?php
+// Start session
+session_start();
+
+// Destroy session variables
+session_unset();
+
+// Destroy the session itself
+session_destroy();
+
+// Redirect to login page
+header("Location: login.php");
+exit;
+?>
+
+register.php
+<?php
+// Connect to the database
+$conn = mysqli_connect("localhost", "root", "", "flight_ticket");
+
+// Check connection
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+// If form is submitted
+if (isset($_POST['username'])) {
+    // Validate user input
+    $errors = [];
+    if (empty($_POST['username'])) {
+        $errors[] = "Username is required.";
+    }
+    if (empty($_POST['password'])) {
+        $errors[] = "Password is required.";
+    }
+    // ... (Add validation for other fields like email, name, etc.)
+
+    // Check if username already exists
+    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+    $stmt->bind_param("s", $_POST['username']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $errors[] = "Username already exists.";
+    }
+
+    // If no errors, proceed with registration
+    if (empty($errors)) {
+        // Hash the password
+        $hashed_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+
+        // Prepare SQL query using parameterized statements
+        $stmt = $conn->prepare("INSERT INTO users (username, password, email) VALUES (?, ?, ?)");
+        // Bind parameters (replace placeholders with actual column names)
+        $stmt->bind_param("sss", $_POST['username'], $hashed_password, $_POST['email']);
+        // ... (Bind other fields as needed)
+
+        if ($stmt->execute()) {
+            echo "<p>Registration successful!</p>";
+            // Optionally redirect to login page
+        } else {
+            echo "<p>Registration failed. Please try again.</p>";
+        }
+    } else {
+        // Display errors
+        echo "<ul>";
+        foreach ($errors as $error) {
+            echo "<li>$error</li>";
+        }
+        echo "</ul>";
+    }
+}
+
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register - Flight Reservation System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+    </header>
+    <main>
+        <h2>Register</h2>
+        <form action="register.php" method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <button type="submit">Register</button>
+        </form>
+    </main>
+    <footer>
+    </footer>
+</body>
+</html>
+
+styles.css
+/* General styling for the entire website */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  header, main, footer {
+    padding: 2rem;
+  }
+  
+  /* Navbar styling */
+  .navbar {
+    background-color: #f8f9fa; /* Light gray */
+    border-bottom: 1px solid #e5e5e5; /* Lighter gray */
+  }
+  
+  .navbar-brand {
+    font-weight: bold;
+  }
+  
+  /* Hero section styling */
+  .hero {
+    background-color: #343a40; /* Dark blue */
+    color: #fff; /* White text */
+    text-align: center;
+    padding: 5rem 0;
+  }
+  
+  .hero h2 {
+    font-size: 2.5rem;
+  }
+  
+  .btn-primary {
+    background-color: #007bff; /* Bootstrap primary color */
+    border-color: #007bff;
+  }
+  
+  /* Featured destinations styling */
+  .card-columns {
+    column-count: 2;
+    column-gap: 1rem;
+  }
+  
+  .card-img-top {
+    width: 100%;
+    height: 200px; /* Adjust as needed */
+    object-fit: cover;
+  }
+  
+  /* Recent reviews styling */
+  .blockquote {
+    border-left: 5px solid #e5e5e5; /* Gray border */
+    padding: 1rem;
+    font-size: 1.2rem;
+  }
+  
+  /* Footer styling */
+  footer {
+    background-color: #f8f9fa; /* Light gray */
+    text-align: center;
+  }
+  
