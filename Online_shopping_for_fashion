@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Fashionista</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="#">Home</a>
+    <a href="product.html"></a>
+    <a href="categories.html">Categories</a>
+    <a href="about-us.html">About Us</a>
+    <a href="contact.html">Contact</a>
+    <a href="cart.html">Cart</a>
+  </nav>
+  <div class="banner">
+    <h1>Fashionista</h1>
+    <p>Your one-stop shop for the latest fashion trends.</p>
+  </div>
+</header>
+
+<main>
+  <section class="featured-products">
+    <h2>Featured Products</h2>
+    </section>
+  <section class="categories">
+    <h2>Explore Categories</h2>
+    </section>
+</main>
+
+<footer>
+  <p>&copy; 2024 Fashionista</p>
+</footer>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>About Us - Fashionista</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  </header>
+
+<main>
+  <h2>About Us</h2>
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, sapien eu vestibulum aliquam, odio turpis pellentesque turpis, eu tincidunt mauris justo eu odio.</p>
+  </main>
+
+<footer>
+  </footer>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Cart - Fashionista</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <?php include("header.php"); ?>
+</header>
+
+<main>
+  <h2>Your Shopping Cart</h2>
+
+  <?php
+  // Connect to the database
+  include("config.php");
+
+  // Check if there are items in the cart
+  $cartItems = getNumCartItems($conn);
+  if ($cartItems > 0) {
+    ?>
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Subtotal</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php
+        displayCartItems($conn);
+        ?>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4" class="text-right">Total:</td>
+          <td><?php echo calculateCartTotal($conn); ?></td>
+        </tr>
+      </tfoot>
+    </table>
+    <a href="checkout.php" class="checkout-button">Proceed to Checkout</a>
+    <?php
+  } else {
+    echo "<p>Your cart is currently empty.</p>";
+  }
+  ?>
+
+</main>
+
+<footer>
+  <?php include("footer.php"); ?>
+</footer>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Contact Us - Fashionista</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  </header>
+
+<main>
+  <h2>Contact Us
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Categories - Fashionista</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <?php include("header.php"); ?> </header>
+
+<main>
+  <h2>Product Categories</h2>
+
+  <?php
+  // Connect to the database
+  include("config.php");
+
+  // Fetch all categories from the database
+  $sql = "SELECT * FROM categories";
+  $result = mysqli_query($conn, $sql);
+
+  // Display categories in a grid format
+  if (mysqli_num_rows($result) > 0) {
+    echo "<div class='category-grid'>";
+    while ($row = mysqli_fetch_assoc($result)) {
+      echo "<div class='category-item'>";
+      echo "<a href='category.php?id=" . $row['id'] . "'>";
+      echo "<h3>" . $row['name'] . "</h3>";
+      // Optionally display a category image here
+      echo "</a>";
+      echo "</div>";
+    }
+    echo "</div>";
+  } else {
+    echo "<p>No categories found.</p>";
+  }
+  ?>
+
+</main>
+
+<footer>
+  <?php include("footer.php"); ?> </footer>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Product Name - Fashionista</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  </header>
+
+<main>
+  <div class="product-details">
+    <img src="product-image.jpg" alt="Product Name">
+    <h1 class="product-name">Product Name</h1>
+    <p class="description">Product description here...</p>
+    <p class="price">$99.99</p>
+    <button class="product-button">Add to Cart</button>
+  </div>
+</main>
+
+<footer>
+  </footer>
+
+</body>
+</html>
+/* Basic styling for the overall layout */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  header {
+    background-color: #f0f0f0;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  nav {
+    display: flex;
+    gap: 20px;
+  }
+  
+  nav a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .banner {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  main {
+    padding: 20px;
+  }
+  
+  .featured-products {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  
+  .product {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .product-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+  }
+  
+  .product-details {
+    margin-top: 10px;
+  }
+  
+  .product-name {
+    font-weight: bold;
+    font-size: 18px;
+  }
+  
+  .product-price {
+    color: #f00;
+    font-weight: bold;
+  }
+  
+  .product-button {
+    background-color: #f00;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  footer {
+    background-color: #eee;
+    padding: 20px;
+    text-align: center;
+  }
+  
