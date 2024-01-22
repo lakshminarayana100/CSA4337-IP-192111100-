@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Insurance Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.php">Home</a>
+            <?php if (isset($_SESSION['user_type'])): ?>
+                <?php if ($_SESSION['user_type'] == 'admin'): ?>
+                    <a href="admin.php">Admin Dashboard</a>
+                <?php elseif ($_SESSION['user_type'] == 'agent'): ?>
+                    <a href="agents.php">Agent Portal</a>
+                <?php else: ?>
+                    <a href="user.php">User Portal</a>
+                <?php endif; ?>
+                <a href="logout.php">Logout</a>
+            <?php else: ?>
+                <a href="login.php">Login</a>
+                <a href="register.php">Register</a>
+            <?php endif; ?>
+        </nav>
+    </header>
+
+    <main>
+        </main>
+
+    <footer>
+    </footer>
+</body>
+</html>
+/* Basic styling for elements */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header, nav, main, footer {
+    padding: 10px;
+}
+<?php
+// Database connection details
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "insurance";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+?>
+<?php
+require_once("config.php");
+require_once("functions.php");
+
+// Start a session for user authentication
+session_start();
+
+// Determine the template file to include
+$template_file = "home.html";
+
+// Retrieve data for the template (if needed)
+// ...
+
+// Render the template
+include("templates/" . $template_file);
+?>
+function db_connect() {
+    global $conn;
+
+    // Database credentials (replace with your own)
+    $servername = "localhost";
+    $username = "your_username";
+    $password = "your_password";
+    $dbname = "your_database_name";
+
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+}
