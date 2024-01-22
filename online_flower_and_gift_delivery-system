@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flower Power - Online Flower & Gift Delivery</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Browse Flowers</a>
+            <a href="#">Gifts</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact Us</a>
+            <a href="#"><img src="cart.png" alt="Cart"></a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="banner">
+            <h1>Welcome to Flower Power!</h1>
+            <p>Your one-stop shop for beautiful flowers and thoughtful gifts.</p>
+            <a href="#">Shop Now</a>
+        </section>
+
+        <section class="categories">
+            <h2>Popular Categories</h2>
+            <ul>
+                <li><a href="#">Roses</a></li>
+                <li><a href="#">Lilies</a></li>
+                <li><a href="#">Tulips</a></li>
+                <li><a href="#">Sunflowers</a></li>
+                <li><a href="#">Mixed Bouquets</a></li>
+                <li><a href="#">Plants</a></li>
+            </ul>
+        </section>
+
+        <section class="featured-products">
+            <h2>Featured Products</h2>
+            <div class="product-card">
+                <img src="product1.jpg" alt="Product 1">
+                <h3>Product Name 1</h3>
+                <p>Description...</p>
+                <a href="#">Add to Cart</a>
+            </div>
+            <div class="product-card">
+                <img src="product2.jpg" alt="Product 2">
+                <h3>Product Name 2</h3>
+                <p>Description...</p>
+                <a href="#">Add to Cart</a>
+            </div>
+            <div class="product-card">
+                <img src="product3.jpg" alt="Product 3">
+                <h3>Product Name 3</h3>
+                <p>Description...</p>
+                <a href="#">Add to Cart</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; Flower Power 2024</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #f0f0f0;
+    padding: 10px;
+}
+
+nav {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav a {
+    padding: 10px;
+    text-decoration: none;
+    color: #333;
+}
+
+.banner {
+    background-image: url("banner.jpg");
+    height: 400px;
+    text-align: center;
+    color: #fff;
+}
+
+.banner h1 {
+    font-size: 2em;
+    padding-top: 100px;
+}
+
+.banner p {
+    font-size: 1.2em;
+    margin-top: 20px;
+}
+
+.categories ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.categories li {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.featured-products {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.product-card {
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+.product-card img {
+    width: 200px;
+    height: 200px
+}<?php
+// Database credentials (replace with your own)
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "delivery";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+?>
