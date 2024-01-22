@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Online Veterinary Care</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        </header>
+    <main>
+        <h1>Welcome to Online Veterinary Care</h1>
+        <section class="user-options">
+            </section>
+        <section class="doctor-options">
+            </section>
+    </main>
+    <footer>
+        </footer>
+</body>
+</html>
+/* Basic styling */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 20px;
+  }
+  
+  h1, h2, h3 {
+    font-weight: bold;
+  }
+  
+  p {
+    line-height: 1.5;
+  }
+  
+  /* Image styling */
+  img {
+    width: 100%;
+    height: auto; /* Maintain aspect ratio */
+    margin-bottom: 20px; /* Add spacing below images */
+  }
+  
+  /* Additional styling as needed */
+  
+  <?php
+require_once("config.php");
+
+// Handle form submission
+if (isset($_POST['register'])) {
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    // Validate user input (implement your validation rules here)
+
+    // Hash the password
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Prepare SQL query to insert user data
+    $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sss", $username, $email, $hashed_password);
+
+    // Execute the query
+    if ($stmt->execute()) {
+        // Registration successful, redirect to login page
+        header("Location: login.php");
+    } else {
+        // Registration failed, display an error message
+    }
+}
+?>
+<?php
+require_once("config.php");
+
+// Handle form submission
+if (isset($_POST['login'])) {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    // Prepare SQL query to fetch user data based on email
+    $sql = "SELECT * FROM users WHERE email = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Check if a user with the given email exists
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+
+        // Verify the password
+        if (password_verify($password, $user['password'])) {
+            // Successful login, start a session
+            session_start();
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            header("Location: dashboard.php"); // Example
+        } else {
+            // Invalid password, display an error message
+        }
+    } else {
+        // User not found, display an error message
+    }
+}
+?>
