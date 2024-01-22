@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriShop</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>AgriShop</h1>
+        <!-- Add navigation links -->
+        <nav>
+            <ul>
+                <li><a href="login.php">Login</a></li>
+                <li><a href="register.php">Register</a></li>
+                <!-- Add other navigation links -->
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Farmer Dashboard -->
+    <section id="farmer-dashboard" class="hidden">
+        <!-- Farmer-specific content goes here -->
+    </section>
+
+    <!-- Public Dashboard -->
+    <section id="public-dashboard" class="hidden">
+        <!-- Public-specific content goes here -->
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 AgriShop</p>
+    </footer>
+
+</body>
+
+</html>
+/* styles.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 1em;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 10px;
+}
+
+section {
+    margin: 20px;
+}
+
+/* Style Farmer Dashboard */
+#farmer-dashboard {
+    /* Farmer-specific styling */
+}
+
+/* Style Public Dashboard */
+#public-dashboard {
+    /* Public-specific styling */
+}
+
+footer {
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 1em;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+<?php
+// Database credentials (replace with your own)
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "agri";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+?>
+<?php
+require_once("config.php");
+
+// Handle form submission
+if (isset($_POST['register'])) {
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    // Validate user input (implement your validation rules here)
+
+    // Hash the password
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Prepare SQL query to insert user data
+    $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sss", $username, $email, $hashed_password);
+
+    // Execute the query
+    if ($stmt->execute()) {
+        // Registration successful, redirect to login page
+        header("Location: login.php");
+    } else {
+        // Registration failed, display an error message
+    }
+}
+?>
+<?php
+require_once("config.php");
+
+// Handle form submission
+if (isset($_POST['login'])) {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    // Prepare SQL query to fetch user data based on email
+    $sql = "SELECT * FROM users WHERE email = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Check if a user with the given email exists
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+
+        // Verify the password
+        if (password_verify($password, $user['password'])) {
+            // Successful login, start a session
+            session_start();
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            header("Location: dashboard.php"); // Example
+        } else {
+            // Invalid password, display an error message
+        }
+    } else {
+        // User not found, display an error message
+    }
+}
+?>
