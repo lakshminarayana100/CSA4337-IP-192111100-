@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Toll Gate Payment</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Online Toll Gate Payment</h1>
+    </header>
+    <main>
+        <section class="user-types">
+            <h2>Choose Your User Type</h2>
+            <div class="user-type">
+                <a href="#">Admin</a>
+            </div>
+            <div class="user-type">
+                <a href="#">User</a>
+            </div>
+            <div class="user-type">
+                <a href="#">Toll Gate User</a>
+            </div>
+        </section>
+    </main>
+    <footer>
+        &copy; Online Toll Gate Payment System 2024
+    </footer>
+</body>
+</html>
+<?php
+// Database credentials (replace with your own)
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "tollgate";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+?>
+<?php
+require_once("config.php");
+
+// Handle form submission
+if (isset($_POST['register'])) {
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    // Validate user input (implement your validation rules here)
+
+    // Hash the password
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Prepare SQL query to insert user data
+    $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sss", $username, $email, $hashed_password);
+
+    // Execute the query
+    if ($stmt->execute()) {
+        // Registration successful, redirect to login page
+        header("Location: login.php");
+    } else {
+        // Registration failed, display an error message
+    }
+}
+?>
+<?php
+require_once("config.php");
+
+// Handle form submission
+if (isset($_POST['login'])) {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    // Prepare SQL query to fetch user data based on email
+    $sql = "SELECT * FROM users WHERE email = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Check if a user with the given email exists
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+
+        // Verify the password
+        if (password_verify($password, $user['password'])) {
+            // Successful login, start a session
+            session_start();
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            header("Location: dashboard.php"); // Example
+        } else {
+            // Invalid password, display an error message
+        }
+    } else {
+        // User not found, display an error message
+    }
+}
+?>
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+
+.user-types {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.user-type {
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.user-type a {
+    display: block;
+    color: #333;
+    text-decoration: none;
+}
+
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+}
