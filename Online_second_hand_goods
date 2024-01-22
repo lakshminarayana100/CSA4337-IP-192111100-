@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Second-Hand Goods Marketplace</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Second-Hand Goods Marketplace</h1>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Browse Categories</a>
+            <a href="#">My Account (if logged in)</a>
+            <a href="#">Sign Up/Login</a>
+        </nav>
+    </header>
+    <main>
+        <section class="banner">
+            <img src="banner.jpg" alt="Second-Hand Goods Marketplace Banner">
+            <p>Buy, sell, or trade gently used items in your community.</p>
+            <a href="#">Browse Now</a>
+        </section>
+        <section class="featured-items">
+            <h2>Featured Items</h2>
+            <div class="item-card">
+                <img src="item1.jpg" alt="Item 1 Image">
+                <h3>Item 1 Title</h3>
+                <p>$10.00</p>
+                <a href="#">View Details</a>
+            </div>
+            </section>
+        <section class="categories">
+            <h2>Browse by Category</h2>
+            <ul>
+                <li><a href="#">Electronics</a></li>
+                <li><a href="#">Furniture</a></li>
+                <li><a href="#">Clothing</a></li>
+                <li><a href="#">Books & Media</a></li>
+                <li><a href="#">Sports & Hobbies</a></li>
+                </ul>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; Second-Hand Goods Marketplace 2024</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
+<?php
+// Database credentials (replace with your own)
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "secondhand";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+?>
+<?php
+require_once("config.php");
+
+// Handle form submission
+if (isset($_POST['register'])) {
+    $username = $_POST['username'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    // Validate user input (implement your validation rules here)
+
+    // Hash the password
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Prepare SQL query to insert user data
+    $sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sss", $username, $email, $hashed_password);
+
+    // Execute the query
+    if ($stmt->execute()) {
+        // Registration successful, redirect to login page
+        header("Location: login.php");
+    } else {
+        // Registration failed, display an error message
+    }
+}
+?>
+<?php
+require_once("config.php");
+
+// Handle form submission
+if (isset($_POST['login'])) {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    // Prepare SQL query to fetch user data based on email
+    $sql = "SELECT * FROM users WHERE email = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Check if a user with the given email exists
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+
+        // Verify the password
+        if (password_verify($password, $user['password'])) {
+            // Successful login, start a session
+            session_start();
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            header("Location: dashboard.php"); // Example
+        } else {
+            // Invalid password, display an error message
+        }
+    } else {
+        // User not found, display an error message
+    }
+}
+?>
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #f0f0f0;
+    padding: 10px;
+}
+
+nav a {
+    display: inline-block;
+    padding: 10px;
+    text-decoration: none;
+    color: #333;
+}
+
+.banner {
+    background-image: url("banner.jpg");
+    height: 400px;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+.banner h1 {
+    font-size: 2em;
+}
+
+.featured-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.item-card {
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+.categories ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.categories li {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+footer {
+    background-color: #f0f0f0;
+    padding: 10px;
+    text-align: center;
+}
